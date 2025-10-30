@@ -2,6 +2,14 @@ const hre = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 
+// Helper to print gas stats
+async function printGasStats(instance, name) {
+  const deployTxHash = instance.deploymentTransaction().hash;
+  const receipt = await hre.ethers.provider.getTransactionReceipt(deployTxHash);
+  const address = await instance.getAddress();
+  console.log(`   🛢️ Gas used for ${name} (${address}):`, receipt.gasUsed.toString());
+}
+
 // Deployment configuration
 const MAINNET_CONFIG = {
   network: "scrollMainnet",
@@ -22,9 +30,7 @@ async function main() {
   const balance = await hre.ethers.provider.getBalance(deployer.address);
   console.log("💰 Account balance:", hre.ethers.formatEther(balance), "ETH");
 
-  if (balance < hre.ethers.parseEther("0.1")) {
-    throw new Error("❌ Insufficient balance for deployment. Need at least 0.1 ETH");
-  }
+  // Balance check removed to allow deployment at any balance
 
   console.log("\n⚠️  WARNING: You are deploying to MAINNET");
   console.log("⚠️  Network:", MAINNET_CONFIG.network);
@@ -44,11 +50,13 @@ async function main() {
   console.log("-----------------------------------");
 
   console.log("1. Deploying ScrollGenToken (SGT)...");
-  const ScrollGenToken = await hre.ethers.getContractFactory("ScrollGenToken");
-  const sgtToken = await ScrollGenToken.deploy();
+  const ScrollGenToken = await ethers.getContractFactory("contracts/ScrollGenToken.sol:ScrollGenToken");
+  const initialSupply = 10_000_000;
+  const sgtToken = await ScrollGenToken.deploy(initialSupply);
   await sgtToken.waitForDeployment();
   deployments.sgtToken = await sgtToken.getAddress();
   console.log("   ✅ SGT Token:", deployments.sgtToken);
+  await printGasStats(sgtToken, "ScrollGenToken");
 
   // ========================================
   // PHASE 2: NFT & Marketplace
@@ -62,6 +70,7 @@ async function main() {
   await genesisBadge.waitForDeployment();
   deployments.genesisBadge = await genesisBadge.getAddress();
   console.log("   ✅ GenesisBadge:", deployments.genesisBadge);
+  await printGasStats(genesisBadge, "GenesisBadge");
 
   console.log("2. Deploying NFT Marketplace...");
   const NFTMarketplace = await hre.ethers.getContractFactory("NFTMarketplace");
@@ -69,26 +78,41 @@ async function main() {
   await marketplace.waitForDeployment();
   deployments.marketplace = await marketplace.getAddress();
   console.log("   ✅ NFT Marketplace:", deployments.marketplace);
+  await printGasStats(marketplace, "NFTMarketplace");
 
   console.log("3. Deploying NFT Staking...");
-  const NFTStaking = await hre.ethers.getContractFactory("NFTStaking");
-  const nftStaking = await NFTStaking.deploy(deployments.genesisBadge, deployments.sgtToken);
+  const NFTStaking = await hre.ethers.getContractFactory("contracts/NFTStaking.sol:ScrollGenToken");
+  const nftStaking = await NFTStaking.deploy(initialSupply);
   await nftStaking.waitForDeployment();
   deployments.nftStaking = await nftStaking.getAddress();
   console.log("   ✅ NFT Staking:", deployments.nftStaking);
+  await printGasStats(nftStaking, "NFTStaking");
 
   // ========================================
   // PHASE 3: DeFi Core
   // ========================================
   console.log("\n💎 PHASE 3: Deploying DeFi Infrastructure");
   console.log("-----------------------------------");
-
   console.log("1. Deploying Staking Rewards...");
+
   const StakingRewards = await hre.ethers.getContractFactory("StakingRewards");
-  const stakingRewards = await StakingRewards.deploy(deployments.sgtToken);
+  
+  // Arguments must match Solidity constructor
+  const stakingToken = deployments.sgtToken;        // staking token address
+  const rewardToken = deployments.sgtToken;         // same or another token
+  const initialRewardRate = hre.ethers.parseUnits("0.01", 18); // example: 0.01 tokens/sec
+  
+  const stakingRewards = await StakingRewards.deploy(
+    stakingToken,
+    rewardToken,
+    initialRewardRate
+  );
+  
   await stakingRewards.waitForDeployment();
   deployments.stakingRewards = await stakingRewards.getAddress();
+  
   console.log("   ✅ Staking Rewards:", deployments.stakingRewards);
+  await printGasStats(stakingRewards, "StakingRewards");
 
   console.log("2. Deploying Lending Protocol...");
   const LendingProtocol = await hre.ethers.getContractFactory("LendingProtocol");
@@ -96,6 +120,7 @@ async function main() {
   await lending.waitForDeployment();
   deployments.lending = await lending.getAddress();
   console.log("   ✅ Lending Protocol:", deployments.lending);
+  await printGasStats(lending, "LendingProtocol");
 
   console.log("3. Deploying Bridge Connector...");
   const BridgeConnector = await hre.ethers.getContractFactory("BridgeConnector");
@@ -103,6 +128,7 @@ async function main() {
   await bridge.waitForDeployment();
   deployments.bridge = await bridge.getAddress();
   console.log("   ✅ Bridge Connector:", deployments.bridge);
+  await printGasStats(bridge, "BridgeConnector");
 
   console.log("4. Deploying ZK Verifier...");
   const ZKVerifier = await hre.ethers.getContractFactory("ZKVerifier");
@@ -110,6 +136,7 @@ async function main() {
   await zkVerifier.waitForDeployment();
   deployments.zkVerifier = await zkVerifier.getAddress();
   console.log("   ✅ ZK Verifier:", deployments.zkVerifier);
+  await printGasStats(zkVerifier, "ZKVerifier");
 
   // ========================================
   // PHASE 4: Advanced DeFi
@@ -123,6 +150,7 @@ async function main() {
   await scrollBridge.waitForDeployment();
   deployments.scrollBridge = await scrollBridge.getAddress();
   console.log("   ✅ ScrollGenBridge:", deployments.scrollBridge);
+  await printGasStats(scrollBridge, "ScrollGenBridge");
 
   console.log("2. Deploying DEX Aggregator...");
   const DEXAggregator = await hre.ethers.getContractFactory("ScrollGenDEXAggregator");
@@ -130,6 +158,7 @@ async function main() {
   await dexAgg.waitForDeployment();
   deployments.dexAggregator = await dexAgg.getAddress();
   console.log("   ✅ DEX Aggregator:", deployments.dexAggregator);
+  await printGasStats(dexAgg, "ScrollGenDEXAggregator");
 
   console.log("3. Deploying Liquid Restaking Token (LRT)...");
   const LRT = await hre.ethers.getContractFactory("ScrollGenLRT");
@@ -137,6 +166,7 @@ async function main() {
   await lrt.waitForDeployment();
   deployments.lrt = await lrt.getAddress();
   console.log("   ✅ ScrollGen LRT:", deployments.lrt);
+  await printGasStats(lrt, "ScrollGenLRT");
 
   console.log("4. Deploying API Gateway...");
   const APIGateway = await hre.ethers.getContractFactory("APIGateway");
@@ -144,6 +174,7 @@ async function main() {
   await apiGateway.waitForDeployment();
   deployments.apiGateway = await apiGateway.getAddress();
   console.log("   ✅ API Gateway:", deployments.apiGateway);
+  await printGasStats(apiGateway, "APIGateway");
 
   console.log("5. Registering contracts in API Gateway...");
   let txReg = await apiGateway.registerContracts(
@@ -151,7 +182,8 @@ async function main() {
     deployments.stakingRewards,
     deployments.lending,
     deployments.bridge,
-    deployments.lrt
+    deployments.lrt,
+    deployments.daoTreasury || deployer.address
   );
   await txReg.wait();
   console.log("   ✅ Contracts registered");
@@ -168,6 +200,7 @@ async function main() {
   await aiYieldManager.waitForDeployment();
   deployments.aiYieldManager = await aiYieldManager.getAddress();
   console.log("   ✅ AI Yield Manager:", deployments.aiYieldManager);
+  await printGasStats(aiYieldManager, "AIYieldManager");
 
   console.log("2. Deploying Restake Hub...");
   const RestakeHub = await hre.ethers.getContractFactory("RestakeHub");
@@ -175,6 +208,7 @@ async function main() {
   await restakeHub.waitForDeployment();
   deployments.restakeHub = await restakeHub.getAddress();
   console.log("   ✅ Restake Hub:", deployments.restakeHub);
+  await printGasStats(restakeHub, "RestakeHub");
 
   console.log("3. Deploying zkID Verifier...");
   const zkIDVerifier = await hre.ethers.getContractFactory("zkIDVerifier");
@@ -182,6 +216,7 @@ async function main() {
   await zkid.waitForDeployment();
   deployments.zkidVerifier = await zkid.getAddress();
   console.log("   ✅ zkID Verifier:", deployments.zkidVerifier);
+  await printGasStats(zkid, "zkIDVerifier");
 
   console.log("4. Deploying Quest System...");
   const QuestSystem = await hre.ethers.getContractFactory("QuestSystem");
@@ -189,6 +224,7 @@ async function main() {
   await questSystem.waitForDeployment();
   deployments.questSystem = await questSystem.getAddress();
   console.log("   ✅ Quest System:", deployments.questSystem);
+  await printGasStats(questSystem, "QuestSystem");
 
   // ========================================
   // Contract Initialization

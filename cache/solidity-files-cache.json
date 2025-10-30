@@ -1155,8 +1155,8 @@
       ]
     },
     "C:\\SLIMPROJECTS\\scrollgen4\\contracts\\NFTStaking.sol": {
-      "lastModificationDate": 1761732743134,
-      "contentHash": "d13476e522d98a7eac1d037b1093cb03",
+      "lastModificationDate": 1761820815650,
+      "contentHash": "2b7c437f9a6d1102b76b3d4b431fb6ad",
       "sourceName": "contracts/NFTStaking.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -1183,16 +1183,14 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "@openzeppelin/contracts/access/Ownable.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "./GenesisBadge.sol"
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
       ],
       "versionPragmas": [
         "^0.8.24"
       ],
       "artifacts": [
-        "NFTStaking"
+        "ScrollGenToken"
       ]
     },
     "C:\\SLIMPROJECTS\\scrollgen4\\contracts\\GenesisBadge.sol": {

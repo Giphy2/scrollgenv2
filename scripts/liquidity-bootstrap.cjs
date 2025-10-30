@@ -20,7 +20,7 @@ const BOOTSTRAP_CONFIG = {
   uniswapRouter: "0x0000000000000000000000000000000000000000", // Update with actual router
 
   // DAO Treasury wallet
-  daoTreasury: process.env.DAO_TREASURY_ADDRESS || "",  
+  daoTreasury: process.env.DAO_TREASURY_ADDRESS || "",
 };
 
 async function main() {
@@ -33,39 +33,18 @@ async function main() {
   console.log("🔐 Bootstrapping with account:", deployer.address);
 
   // Load deployment log
-  // Behavior:
-  // 1. If DEPLOY_LOG_PATH env var is provided, use it (absolute or relative to deployments/)
-  // 2. Otherwise prefer mainnet deploy log. If not found, fall back to testnet deploy log.
-  const envPath = process.env.DEPLOY_LOG_PATH;
-  const defaultMainnet = path.join(__dirname, '..', 'deployments', 'mainnet-deploy-log.json');
-  const defaultTestnet = path.join(__dirname, '..', 'deployments', 'testnet-phase6-deploy-log.json');
-
-  let deployLogPath;
-  if (envPath) {
-    // allow either an absolute path or a filename relative to deployments/
-    deployLogPath = path.isAbsolute(envPath) ? envPath : path.join(__dirname, '..', 'deployments', envPath);
-    if (!fs.existsSync(deployLogPath)) {
-      throw new Error(`❌ Deployment log not found at DEPLOY_LOG_PATH=${envPath}`);
-    }
-  } else {
-    if (fs.existsSync(defaultMainnet)) {
-      deployLogPath = defaultMainnet;
-    } else if (fs.existsSync(defaultTestnet)) {
-      deployLogPath = defaultTestnet;
-      console.log(`   ⚠️  mainnet deploy log not found, using testnet deploy log: ${defaultTestnet}`);
-    } else {
-      throw new Error("❌ Deployment log not found. Run deploy-phase6 or set DEPLOY_LOG_PATH to the deploy log JSON.");
-    }
+  const deployLogPath = path.join(__dirname, '..', 'deployments', 'mainnet-deploy-log.json');
+  if (!fs.existsSync(deployLogPath)) {
+    throw new Error("❌ Deployment log not found. Run deploy-phase6 first.");
   }
 
-  console.log(`\n📦 Using deploy log: ${deployLogPath}`);
   const deployLog = JSON.parse(fs.readFileSync(deployLogPath, 'utf8'));
   const { contracts } = deployLog;
 
   console.log("\n📦 Loading Contracts");
   console.log("-----------------------------------");
 
-  const sgtToken = await hre.ethers.getContractAt("ScrollGenToken", contracts.sgtToken);
+  const sgtToken = await hre.ethers.getContractAt("contracts/ScrollGenToken.sol:ScrollGenToken", contracts.sgtToken);
   const stakingRewards = await hre.ethers.getContractAt("StakingRewards", contracts.stakingRewards);
   const restakeHub = await hre.ethers.getContractAt("RestakeHub", contracts.restakeHub);
   const questSystem = await hre.ethers.getContractAt("QuestSystem", contracts.questSystem);

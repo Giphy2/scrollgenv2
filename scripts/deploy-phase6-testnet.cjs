@@ -2,6 +2,14 @@ const hre = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 
+// Helper to print gas stats
+async function printGasStats(instance, name) {
+  const deployTxHash = instance.deploymentTransaction().hash;
+  const receipt = await hre.ethers.provider.getTransactionReceipt(deployTxHash);
+  const address = await instance.getAddress();
+  console.log(`   🛢️ Gas used for ${name} (${address}):`, receipt.gasUsed.toString());
+}
+
 async function main() {
   console.log("========================================");
   console.log("  ScrollGen Phase 6 - TESTNET Deployment");
@@ -49,6 +57,7 @@ async function main() {
   await scrollBridge.waitForDeployment();
   deployments.scrollBridge = await scrollBridge.getAddress();
   console.log("   ✅ ScrollGenBridge:", deployments.scrollBridge);
+  await printGasStats(scrollBridge, "ScrollGenBridge");
 
   console.log("2. Deploying DEX Aggregator...");
   const DEXAggregator = await hre.ethers.getContractFactory("ScrollGenDEXAggregator");
@@ -56,6 +65,7 @@ async function main() {
   await dexAgg.waitForDeployment();
   deployments.dexAggregator = await dexAgg.getAddress();
   console.log("   ✅ DEX Aggregator:", deployments.dexAggregator);
+  await printGasStats(dexAgg, "ScrollGenDEXAggregator");
 
   console.log("3. Deploying Liquid Restaking Token (LRT)...");
   const LRT = await hre.ethers.getContractFactory("ScrollGenLRT");
@@ -63,6 +73,7 @@ async function main() {
   await lrt.waitForDeployment();
   deployments.lrt = await lrt.getAddress();
   console.log("   ✅ ScrollGen LRT:", deployments.lrt);
+  await printGasStats(lrt, "ScrollGenLRT");
 
   console.log("4. Deploying API Gateway...");
   const APIGateway = await hre.ethers.getContractFactory("APIGateway");
@@ -70,6 +81,7 @@ async function main() {
   await apiGateway.waitForDeployment();
   deployments.apiGateway = await apiGateway.getAddress();
   console.log("   ✅ API Gateway:", deployments.apiGateway);
+  await printGasStats(apiGateway, "APIGateway");
 
   console.log("5. Registering contracts in API Gateway...");
   console.log("Registering with addresses:", {
@@ -103,6 +115,7 @@ async function main() {
   await aiYieldManager.waitForDeployment();
   deployments.aiYieldManager = await aiYieldManager.getAddress();
   console.log("   ✅ AI Yield Manager:", deployments.aiYieldManager);
+  await printGasStats(aiYieldManager, "AIYieldManager");
 
   console.log("2. Deploying Restake Hub...");
   const RestakeHub = await hre.ethers.getContractFactory("RestakeHub");
@@ -110,6 +123,7 @@ async function main() {
   await restakeHub.waitForDeployment();
   deployments.restakeHub = await restakeHub.getAddress();
   console.log("   ✅ Restake Hub:", deployments.restakeHub);
+  await printGasStats(restakeHub, "RestakeHub");
 
   console.log("3. Deploying zkID Verifier...");
   const zkIDVerifier = await hre.ethers.getContractFactory("zkIDVerifier");
@@ -117,6 +131,7 @@ async function main() {
   await zkid.waitForDeployment();
   deployments.zkidVerifier = await zkid.getAddress();
   console.log("   ✅ zkID Verifier:", deployments.zkidVerifier);
+  await printGasStats(zkid, "zkIDVerifier");
 
   console.log("4. Deploying Quest System...");
   const QuestSystem = await hre.ethers.getContractFactory("QuestSystem");
@@ -124,6 +139,7 @@ async function main() {
   await questSystem.waitForDeployment();
   deployments.questSystem = await questSystem.getAddress();
   console.log("   ✅ Quest System:", deployments.questSystem);
+  await printGasStats(questSystem, "QuestSystem");
 
   // ========================================
   // Contract Initialization

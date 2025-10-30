@@ -1,31 +1,31 @@
 {
-  "timestamp": "2025-10-29T12:39:11.308Z",
+  "timestamp": "2025-10-30T12:22:16.441Z",
   "network": "Scroll Mainnet",
   "transactions": [
     {
       "step": "Staking Rewards Pool",
-      "txHash": "0xfb863f684d9275a51ba271adec8ef4c457831df0475a41541f7eb64a9c0f7b9d",
+      "txHash": "0x0257026cec888399c00e5875cccc439ec7833ea47d48b8529571a9ff01ef0176",
       "amount": "1000000.0 SGT",
-      "contract": "0xc295A7D3F75017846bF14e5F8a4De8ebB77C2748"
+      "contract": "0xe0E6ad5c63D4E20545b5216183d39D1428a195e1"
     },
     {
       "step": "Quest Rewards Pool",
-      "txHash": "0x9165b9cdf0b5969d6b1602b6f839600bc343c8da034c0f8b3969a9eaa746127a",
+      "txHash": "0xf09070eee034460abe5ee29c9a4362c027b3db58770e271c866d4ac5dd2ca943",
       "amount": "500000.0 SGT",
-      "contract": "0x20CBb597c4c8c581A0f20D5D814f9D9CE43be8ab"
+      "contract": "0xb7aCe52504B06635d93D87BE9b3aE4fDB0745a80"
     },
     {
       "step": "Restaking Rewards Pool",
-      "txHash": "0xcd50e7357fef34cbd322f65b4a2ce7a25e98314e285596da83a129c55884d6d1",
+      "txHash": "0x7c8e196aceedb9414962c31e442204a0f255b089605ee9f992a84aa88d44d7e0",
       "amount": "500000.0 SGT",
-      "contract": "0x0DA21Df438ECC85c7658c59BA41a86b051b3d1f2"
+      "contract": "0x2336754dC8c46Dcaffe6094fbcd7ce8a8385f0df"
     }
   ],
   "summary": {
     "totalDistributed": "2000000.0 SGT",
     "tokenDistribution": {
-      "deployer": "1999999999999999998968100.099498985286656518 SGT",
-      "stakingRewards": "1031099.900501014713343482 SGT",
+      "deployer": "7000000.0 SGT",
+      "stakingRewards": "2000000.0 SGT",
       "questSystem": "500000.0 SGT",
       "restakeHub": "500000.0 SGT"
     }

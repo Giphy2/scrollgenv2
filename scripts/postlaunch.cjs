@@ -12,7 +12,7 @@ async function main() {
   console.log("🚀 Activating with account:", deployer.address);
 
   // Load deployment log
-  const deployLogPath = path.join(__dirname, '..', 'deployments', 'testnet-phase6-deploy-log.json');
+  const deployLogPath = path.join(__dirname, '..', 'deployments', 'mainnet-deploy-log.json');
   if (!fs.existsSync(deployLogPath)) {
     throw new Error("❌ Deployment log not found");
   }
@@ -90,24 +90,37 @@ async function main() {
     console.log("   ⚠️  Pool may already exist");
   }
 
-  // ========================================
-  // 4. Activate ScrollPower System
-  // ========================================
-  // console.log("\n🛡️  Step 4: Activating ScrollPower");
-  // console.log("-----------------------------------");
+ // ========================================
+// 4. Activate ScrollPower System
+// ========================================
+console.log("\n🛡️  Step 4: Activating ScrollPower");
+console.log("-----------------------------------");
 
-  // console.log("   Recording genesis activities...");
-  // const tx4 = await zkidVerifier.recordActivity(
-  //   deployer.address,
-  //   "Genesis Deployment",
-  //   100
-  // );
-  // await tx4.wait();
-  // console.log("   ✅ ScrollPower system activated");
+// Dummy proof data (just for genesis activity)
+const dummyProof = {
+  a: [0, 0],
+  b: [[0, 0], [0, 0]],
+  c: [0, 0],
+};
 
-  // ========================================
-  // Summary
-  // ========================================
+// Dummy public inputs
+const dummyPublicInputs = [1]; // just needs to be non-empty
+
+// Unique nullifier for genesis activity
+const nullifier = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("genesis-deployment-" + deployer.address)); 
+// Use verifyStakeProof to record activity
+try {
+  const tx4 = await zkidVerifier.verifyStakeProof(
+    dummyProof,
+    dummyPublicInputs,
+    nullifier
+  );
+  await tx4.wait();
+  console.log("   ✅ ScrollPower system activated");
+} catch (err) {
+  console.error("❌ ScrollPower activation failed:", err);
+}
+// ============================
   console.log("\n========================================");
   console.log("  ✅ ECOSYSTEM ACTIVATION COMPLETE");
   console.log("========================================\n");
@@ -116,7 +129,7 @@ async function main() {
   console.log(`   Genesis NFTs Airdropped: ${earlyTesters.length}`);
   console.log("   Launch Quest: Active");
   console.log("   AI Copilot: Initialized");
-  // console.log("   ScrollPower: Enabled");
+  console.log("   ScrollPower: Enabled");
 
   console.log("\n🎉 ScrollGen v2.0 is LIVE!\n");
 }

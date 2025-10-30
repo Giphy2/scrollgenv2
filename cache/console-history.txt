@@ -1,0 +1,11 @@
+.exit
+ const sgt = await ethers.getContractAt("ScrollGenToken", "0x458beBB9b528De802341b6c689b7Db0f19a15625");
+ const sgt = await ethers.getContractAt("ScrollGenVotesToken", "0x458beBB9b528De802341b6c689b7Db0f19a15625");
+.exit
+(await ethers.provider.getBalance("0x15fAb9050d9Debc6F4675C0cC203d48E6f4D9b15")).toString()
+await ethers.provider.getBalance("0x15fAb9050d9Debc6F4675C0cC203d48E6f4D9b15").toString()
+await ethers.provider.getBalance("0x15fAb9050d9Debc6F4675C0cC203d48E6f4D9b15").toString
+.help
+(await ethers.provider.getBalance("0x15fAb9050d9Dewait ethers.provider.getBalance("0x15fAb9050d9Debc6F4675C0cC203d48E6f4D9b15").toString
+.help
+(await ethers.provider.getBalance("0x15fAb9050d9De

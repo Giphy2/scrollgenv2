@@ -1,0 +1,39 @@
+pragma circom 0.5.46;
+
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
+
+template StakeProof() {
+    // Private inputs
+    signal input stakeAmount;
+    signal input nullifier;
+    signal input secret;
+
+    // Public inputs
+    signal input threshold;
+
+    // Outputs
+    signal output commitment;
+    signal output isValid;
+
+    // Check stakeAmount >= threshold
+    component gte = GreaterEqThan(252);
+    gte.in[0] <== stakeAmount;
+    gte.in[1] <== threshold;
+
+    // Generate commitment
+    component hasher = Poseidon(3);
+    hasher.inputs[0] <== stakeAmount;
+    hasher.inputs[1] <== nullifier;
+    hasher.inputs[2] <== secret;
+
+    commitment <== hasher.out;
+    isValid <== gte.out;
+
+    // Enforce that isValid is 1
+    isValid * (1 - isValid) <== 0; // forces isValid to be 0 or 1
+    isValid * (isValid - 1) <== 0; // optional extra safety
+}
+
+// In Circom 0.5.x, define main explicitly
+component main = StakeProof();

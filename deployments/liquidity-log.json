@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-10-29T12:39:11.308Z",
+  "network": "Scroll Mainnet",
+  "transactions": [
+    {
+      "step": "Staking Rewards Pool",
+      "txHash": "0xfb863f684d9275a51ba271adec8ef4c457831df0475a41541f7eb64a9c0f7b9d",
+      "amount": "1000000.0 SGT",
+      "contract": "0xc295A7D3F75017846bF14e5F8a4De8ebB77C2748"
+    },
+    {
+      "step": "Quest Rewards Pool",
+      "txHash": "0x9165b9cdf0b5969d6b1602b6f839600bc343c8da034c0f8b3969a9eaa746127a",
+      "amount": "500000.0 SGT",
+      "contract": "0x20CBb597c4c8c581A0f20D5D814f9D9CE43be8ab"
+    },
+    {
+      "step": "Restaking Rewards Pool",
+      "txHash": "0xcd50e7357fef34cbd322f65b4a2ce7a25e98314e285596da83a129c55884d6d1",
+      "amount": "500000.0 SGT",
+      "contract": "0x0DA21Df438ECC85c7658c59BA41a86b051b3d1f2"
+    }
+  ],
+  "summary": {
+    "totalDistributed": "2000000.0 SGT",
+    "tokenDistribution": {
+      "deployer": "1999999999999999998968100.099498985286656518 SGT",
+      "stakingRewards": "1031099.900501014713343482 SGT",
+      "questSystem": "500000.0 SGT",
+      "restakeHub": "500000.0 SGT"
+    }
+  }
+}
